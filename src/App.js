@@ -1,24 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { createContext, useState } from "react";
+import { Box, CssBaseline, ThemeProvider } from "@mui/material";
+import { ColorModeContext, useMode } from "./theme";
+import { Navbar, SideBar } from "./scenes";
+import { Outlet } from "react-router-dom";
+
+export const ToggledContext = createContext(null);
 
 function App() {
+  const [theme, colorMode] = useMode();
+  const [toggled, setToggled] = useState(false);
+  const values = { toggled, setToggled };
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ToggledContext.Provider value={values}>
+          <Box sx={{ display: "flex", height: "100vh", maxWidth: "100%" }}>
+            <SideBar />
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                maxWidth: "100%",
+              }}
+            >
+              <Navbar />
+              <Box sx={{ overflowY: "auto", flex: 1, maxWidth: "100%" }}>
+                <Outlet />
+              </Box>
+            </Box>
+          </Box>
+        </ToggledContext.Provider>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
