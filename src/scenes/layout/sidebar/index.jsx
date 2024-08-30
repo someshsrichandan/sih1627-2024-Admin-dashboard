@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Avatar, Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Avatar, Box, IconButton, Typography, useTheme, Badge } from "@mui/material";
 import { useContext, useState } from "react";
 import { tokens } from "../../../theme";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
@@ -17,17 +17,104 @@ import {
   ReceiptOutlined,
   TimelineOutlined,
   WavesOutlined,
+  LocalShippingOutlined,
+  StoreOutlined,
+  InventoryOutlined,
+  ReportOutlined,
+  HealingOutlined,
+  NotificationsOutlined,
+  AssignmentOutlined,
+  InsightsOutlined,
+  SettingsOutlined,
+  ChatBubbleOutlineOutlined,
+  SyncOutlined,
+  AssessmentOutlined,
+  SecurityOutlined,
 } from "@mui/icons-material";
 import avatar from "../../../assets/images/avatar.png";
 import logo from "../../../assets/images/logo.png";
 import Item from "./Item";
-import { ToggledContext } from "../../../App";
+import { ToggledContext, AuthContext } from "../../../App"; // Import AuthContext to access user role
 
 const SideBar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { toggled, setToggled } = useContext(ToggledContext);
+  const { user } = useContext(AuthContext); // Get the current user from AuthContext
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  // Define sidebar items based on user role with real-time and advanced features
+  const getMenuItems = () => {
+    switch (user?.role) {
+      case 'drugSupplier':
+        return (
+          <>
+            <Item title="Dashboard" path="/" colors={colors} icon={<DashboardOutlined />} />
+            <Item title="Manage Inventory" path="/manage-inventory" colors={colors} icon={<InventoryOutlined />} />
+            <Item title="Order History" path="/order-history" colors={colors} icon={<ContactsOutlined />} />
+            <Item title="Supply Chain Overview" path="/supply-chain-overview" colors={colors} icon={<TimelineOutlined />} />
+            <Item title="Real-Time Alerts" path="/real-time-alerts" colors={colors} icon={<Badge badgeContent={4} color="secondary"><NotificationsOutlined /></Badge>} />
+            <Item title="Task Management" path="/task-management" colors={colors} icon={<AssignmentOutlined />} />
+            <Item title="Communication" path="/communication" colors={colors} icon={<ChatBubbleOutlineOutlined />} />
+            <Item title="Predictive Insights" path="/predictive-insights" colors={colors} icon={<InsightsOutlined />} />
+          </>
+        );
+      case 'government':
+        return (
+          <>
+            <Item title="Dashboard" path="/" colors={colors} icon={<DashboardOutlined />} />
+            <Item title="Monitor Distribution" path="/monitor-distribution" colors={colors} icon={<MapOutlined />} />
+            <Item title="Policy Management" path="/policy-management" colors={colors} icon={<HelpOutlineOutlined />} />
+            <Item title="Reports" path="/reports" colors={colors} icon={<BarChartOutlined />} />
+            <Item title="Emergency Response" path="/emergency-response" colors={colors} icon={<HealingOutlined />} />
+            <Item title="Analytics & Insights" path="/analytics" colors={colors} icon={<InsightsOutlined />} />
+            <Item title="Alerts & Notifications" path="/alerts" colors={colors} icon={<Badge badgeContent={3} color="secondary"><NotificationsOutlined /></Badge>} />
+            <Item title="Security Settings" path="/security-settings" colors={colors} icon={<SecurityOutlined />} />
+          </>
+        );
+      case 'distributor':
+        return (
+          <>
+            <Item title="Dashboard" path="/" colors={colors} icon={<DashboardOutlined />} />
+            <Item title="Distribute Drugs" path="/distribute-drugs" colors={colors} icon={<LocalShippingOutlined />} />
+            <Item title="Track Shipments" path="/track-shipments" colors={colors} icon={<SyncOutlined />} />
+            <Item title="Warehouse Management" path="/warehouse-management" colors={colors} icon={<StoreOutlined />} />
+            <Item title="Live Distribution Reports" path="/live-distribution-reports" colors={colors} icon={<AssessmentOutlined />} />
+            <Item title="Collaboration" path="/collaboration" colors={colors} icon={<PeopleAltOutlined />} />
+            <Item title="Task Management" path="/task-management" colors={colors} icon={<AssignmentOutlined />} />
+          </>
+        );
+      case 'distributorLowLevel':
+        return (
+          <>
+            <Item title="Dashboard" path="/" colors={colors} icon={<DashboardOutlined />} />
+            <Item title="Local Distribution" path="/local-distribution" colors={colors} icon={<LocalShippingOutlined />} />
+            <Item title="Monitor Stock Levels" path="/monitor-stock" colors={colors} icon={<InventoryOutlined />} />
+            <Item title="Local Distribution Reports" path="/local-reports" colors={colors} icon={<ReportOutlined />} />
+            <Item title="Real-Time Updates" path="/real-time-updates" colors={colors} icon={<SyncOutlined />} />
+            <Item title="Notifications" path="/notifications" colors={colors} icon={<Badge badgeContent={2} color="secondary"><NotificationsOutlined /></Badge>} />
+          </>
+        );
+      case 'medicalAdministrator':
+        return (
+          <>
+            <Item title="Dashboard" path="/" colors={colors} icon={<DashboardOutlined />} />
+            <Item title="Receive Drugs" path="/receive-drugs" colors={colors} icon={<DonutLargeOutlined />} />
+            <Item title="Stock Management" path="/stock-management" colors={colors} icon={<ReceiptOutlined />} />
+            <Item title="Patient Distribution" path="/patient-distribution" colors={colors} icon={<PeopleAltOutlined />} />
+            <Item title="Usage Reports" path="/usage-reports" colors={colors} icon={<ReportOutlined />} />
+            <Item title="Alerts & Notifications" path="/alerts" colors={colors} icon={<Badge badgeContent={5} color="secondary"><NotificationsOutlined /></Badge>} />
+            <Item title="User Profile" path="/profile" colors={colors} icon={<PersonOutlined />} />
+            <Item title="Settings" path="/settings" colors={colors} icon={<SettingsOutlined />} />
+          </>
+        );
+      default:
+        return (
+          <Item title="Dashboard" path="/" colors={colors} icon={<DashboardOutlined />} />
+        );
+    }
+  };
+
   return (
     <Sidebar
       backgroundColor={colors.primary[400]}
@@ -86,6 +173,7 @@ const SideBar = () => {
           </Box>
         </MenuItem>
       </Menu>
+
       {!collapsed && (
         <Box
           sx={{
@@ -103,14 +191,14 @@ const SideBar = () => {
           />
           <Box sx={{ textAlign: "center" }}>
             <Typography variant="h3" fontWeight="bold" color={colors.gray[100]}>
-              Tony Stark
+              {user?.username || "User Name"}
             </Typography>
             <Typography
               variant="h6"
               fontWeight="500"
               color={colors.greenAccent[500]}
             >
-              VP Fancy Admin
+              {user?.role || "User Role"}
             </Typography>
           </Box>
         </Box>
@@ -128,135 +216,7 @@ const SideBar = () => {
             },
           }}
         >
-          <Item
-            title="Dashboard"
-            path="/"
-            colors={colors}
-            icon={<DashboardOutlined />}
-          />
-        </Menu>
-        <Typography
-          variant="h6"
-          color={colors.gray[300]}
-          sx={{ m: "15px 0 5px 20px" }}
-        >
-          {!collapsed ? "Data" : " "}
-        </Typography>{" "}
-        <Menu
-          menuItemStyles={{
-            button: {
-              ":hover": {
-                color: "#868dfb",
-                background: "transparent",
-                transition: ".4s ease",
-              },
-            },
-          }}
-        >
-          <Item
-            title="Manage Team"
-            path="/team"
-            colors={colors}
-            icon={<PeopleAltOutlined />}
-          />
-          <Item
-            title="Contacts Information"
-            path="/contacts"
-            colors={colors}
-            icon={<ContactsOutlined />}
-          />
-          <Item
-            title="Invoices Balances"
-            path="/invoices"
-            colors={colors}
-            icon={<ReceiptOutlined />}
-          />
-        </Menu>
-        <Typography
-          variant="h6"
-          color={colors.gray[300]}
-          sx={{ m: "15px 0 5px 20px" }}
-        >
-          {!collapsed ? "Pages" : " "}
-        </Typography>
-        <Menu
-          menuItemStyles={{
-            button: {
-              ":hover": {
-                color: "#868dfb",
-                background: "transparent",
-                transition: ".4s ease",
-              },
-            },
-          }}
-        >
-          <Item
-            title="Profile Form"
-            path="/form"
-            colors={colors}
-            icon={<PersonOutlined />}
-          />
-          <Item
-            title="Calendar"
-            path="/calendar"
-            colors={colors}
-            icon={<CalendarTodayOutlined />}
-          />
-          <Item
-            title="FAQ Page"
-            path="/faq"
-            colors={colors}
-            icon={<HelpOutlineOutlined />}
-          />
-        </Menu>
-        <Typography
-          variant="h6"
-          color={colors.gray[300]}
-          sx={{ m: "15px 0 5px 20px" }}
-        >
-          {!collapsed ? "Charts" : " "}
-        </Typography>
-        <Menu
-          menuItemStyles={{
-            button: {
-              ":hover": {
-                color: "#868dfb",
-                background: "transparent",
-                transition: ".4s ease",
-              },
-            },
-          }}
-        >
-          <Item
-            title="Bar Chart"
-            path="/bar"
-            colors={colors}
-            icon={<BarChartOutlined />}
-          />
-          <Item
-            title="Pie Chart"
-            path="/pie"
-            colors={colors}
-            icon={<DonutLargeOutlined />}
-          />
-          <Item
-            title="Line Chart"
-            path="/line"
-            colors={colors}
-            icon={<TimelineOutlined />}
-          />
-          <Item
-            title="Geography Chart"
-            path="/geography"
-            colors={colors}
-            icon={<MapOutlined />}
-          />
-          <Item
-            title="Stream Chart"
-            path="/stream"
-            colors={colors}
-            icon={<WavesOutlined />}
-          />
+          {getMenuItems()} {/* Render menu items based on the user role */}
         </Menu>
       </Box>
     </Sidebar>
