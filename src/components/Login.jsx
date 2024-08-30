@@ -2,6 +2,10 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../App'; // Import the AuthContext
 import { users } from '../data/user'; // Import the hardcoded users
+import './login.css';
+import drug1 from '../assets/images/drug1.jpeg';
+// import drug2 from "../assets/images/drug2.jpeg";
+
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -26,8 +30,15 @@ const Login = () => {
 
   return (
     <div>
+    <h1>online drug inventory and supply chain tracking system</h1>
+    
+    <div className='login'> 
+    <img className='drug1' src={drug1} alt="drug1 image" />
+    {/* <img className='drug2' src={drug2} alt="drug2 image" /> */}
+
+    <div className='login-card'> 
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+      <form className='form' onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Username"
@@ -41,8 +52,11 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
+        <button type="sumbit" className='forgot'> forgot password ?</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      </div>
+      </div>
     </div>
   );
 };
