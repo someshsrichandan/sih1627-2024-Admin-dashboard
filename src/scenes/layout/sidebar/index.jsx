@@ -1,4 +1,4 @@
-// components/Sidebar/Sidebar.js
+// src/components/Sidebar/Sidebar.js
 import React, { useContext, useState } from "react";
 import { Box, IconButton, Typography, useTheme, Avatar } from "@mui/material";
 import { Sidebar, MenuItem, Menu } from "react-pro-sidebar";
@@ -6,13 +6,14 @@ import { MenuOutlined } from "@mui/icons-material";
 import { tokens } from "../../../theme";
 import logo from "../../../assets/images/logo.png";
 import avatar from "../../../assets/images/avatar.png";
-import { ToggledContext, AuthContext } from "../../../App";
-import RoleBasedSidebar from "./RoleBasedSidebar";
+import { ToggledContext } from "../../../App"; // Ensure correct import path for ToggledContext
+import { AuthContext } from "../../../context/AuthContext"; // Ensure correct import path for AuthContext
+import RoleBasedSidebar from "./RoleBasedSidebar"; // Role-based sidebar component
 
 const SideBar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { toggled, setToggled } = useContext(ToggledContext);
-  const { user } = useContext(AuthContext); // Get the current user from AuthContext
+  const { user } = useContext(AuthContext); // Access current user from AuthContext
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 

@@ -1,22 +1,22 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import App from "./App";
-import {
-  Dashboard,
-  Team,
-  Invoices,
-  Contacts,
-  Form,
-  Bar,
-  Line,
-  Pie,
-  FAQ,
-  Geography,
-  Calendar,
-  Stream,
-} from "./scenes";
+// import {
+//   Dashboard,
+//   Team,
+//   Invoices,
+//   Contacts,
+//   Form,
+//   Bar,
+//   Line,
+//   Pie,
+//   FAQ,
+//   Geography,
+//   Calendar,
+//   Stream,
+// } from "./scenes";
 
-
+import Dashboard from './pages/Dashboard';
 import DistributeDrugs from './pages/DistributeDrugs';
 import TrackShipments from './pages/TrackShipments';
 import WarehouseManagement from './pages/WarehouseManagement';
@@ -66,7 +66,7 @@ const AppRouter = () => {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/geography" element={<Geography />} /> */}
           <Route path="/" element={<Dashboard />} />
-                {/* <Route path="/distribute-drugs" element={<DistributeDrugs />} /> */}
+                <Route path="/distribute-drugs" element={<DistributeDrugs />} />
                 <Route path="/track-shipments" element={<TrackShipments />} />
                 <Route path="/warehouse-management" element={<WarehouseManagement />} />
                 <Route path="/live-distribution-reports" element={<LiveDistributionReports />} />
@@ -85,7 +85,7 @@ const AppRouter = () => {
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/security-settings" element={<SecuritySettings />} />
-                {/* <Route path="/local-distribution" element={<LocalDistribution />} /> */}
+                <Route path="/local-distribution" element={<LocalDistribution />} />
                 <Route path="/monitor-stock" element={<MonitorStock />} />
                 <Route path="/local-reports" element={<LocalReports />} />
                 <Route path="/real-time-updates" element={<RealTimeUpdates />} />
