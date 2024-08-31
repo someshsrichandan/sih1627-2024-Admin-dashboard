@@ -4,12 +4,15 @@ import {
     InputLabel, FormControl, Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, TableSortLabel, IconButton, CircularProgress,
     Snackbar, Divider, Chip, Button, Tooltip, Dialog, DialogTitle, DialogContent,
-    DialogActions, DatePicker, AdapterDateFns, LocalizationProvider, Pagination, 
-    TablePagination, SnackbarProvider, Alert as MuiAlert
+    DialogActions, DatePicker, Pagination, 
+    TablePagination, Alert as MuiAlert
 } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers-pro'; 
+import { SnackbarProvider } from 'notistack';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip as ChartTooltip } from 'chart.js';
 import { useSnackbar } from 'notistack';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateRangePicker } from '@mui/x-date-pickers-pro';
 
 // Register ChartJS components

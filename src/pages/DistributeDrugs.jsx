@@ -4,10 +4,10 @@ import {
     InputLabel, Select, MenuItem, Button, Divider, IconButton, Tooltip,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     TableSortLabel, TablePagination, Dialog, DialogTitle, DialogContent,
-    DialogActions, Autocomplete, Snackbar, SnackbarProvider, useSnackbar,
-    Card, CardContent, CardHeader, Switch, FormControlLabel
+    DialogActions, Card, CardContent, CardHeader, Switch, FormControlLabel
 } from '@mui/material';
-import { Visibility, VisibilityOff, Edit, Delete, Search } from '@mui/icons-material';
+import { Visibility, Edit, Delete, Search } from '@mui/icons-material';
+import { SnackbarProvider, useSnackbar } from 'notistack'; // Import from 'notistack'
 
 // Custom hook for handling sorting
 const useSortableData = (items, config = null) => {
@@ -104,7 +104,6 @@ const DistributeDrugs = () => {
     };
 
     const handleFilterApply = () => {
-        // Implement filter logic
         enqueueSnackbar('Filters applied.', { variant: 'info' });
     };
 
@@ -332,13 +331,6 @@ const DistributeDrugs = () => {
                     <Button onClick={handleDialogClose}>Close</Button>
                 </DialogActions>
             </Dialog>
-
-            <Snackbar
-                open={Boolean(selectedRow)}
-                autoHideDuration={6000}
-                onClose={() => setSelectedRow(null)}
-                message="Distribution details updated"
-            />
         </Container>
     );
 };

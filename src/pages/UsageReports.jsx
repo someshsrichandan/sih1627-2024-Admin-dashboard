@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import {
     Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     TablePagination, TextField, Grid, Button, MenuItem, FormControl, InputLabel, Select, 
-    IconButton, Stack, Chip, Tooltip, Accordion, AccordionSummary, AccordionDetails,
+    IconButton, Stack, Chip, Accordion, AccordionSummary, AccordionDetails,
     Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress, Divider, Box,
     LinearProgress, Badge, Card, CardContent, CardHeader, CardActions
 } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -13,11 +14,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DownloadIcon from '@mui/icons-material/Download';
 import InfoIcon from '@mui/icons-material/Info';
 import PieChart from 'react-minimal-pie-chart'; // Example chart library
-import BarChart from 'react-chartjs-2'; // Example chart library
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2'; // Import Bar chart directly
+ // Example chart library
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip as ChartTooltip, Legend } from 'chart.js';
 
 // Register chart components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, Legend);
+
 
 const usageData = [
     // Example data, replace with your data fetching logic
@@ -142,7 +145,7 @@ const UsageReports = () => {
                 <Grid item xs={12} md={6}>
                     <Paper elevation={3} sx={{ padding: 2 }}>
                         <Typography variant="h6">Usage by Drug</Typography>
-                        <BarChart
+                        <Bar
                             type='bar'
                             data={chartData}
                             options={{

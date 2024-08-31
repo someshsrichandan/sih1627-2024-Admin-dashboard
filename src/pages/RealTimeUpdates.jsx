@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
     Container, Typography, Paper, Grid, Box, Button, Snackbar, CircularProgress,
-    IconButton, Tooltip, Divider, Tabs, Tab, ExpansionPanel, ExpansionPanelSummary,
-    ExpansionPanelDetails, Select, MenuItem, FormControl, InputLabel, TextField, useMediaQuery
+    IconButton, Tooltip, Divider, Tabs, Tab, Select, MenuItem, FormControl, InputLabel, TextField
 } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, Title, Tooltip as ChartTooltip, Legend } from 'chart.js';
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useSnackbar } from 'notistack';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 
 // Initialize Chart.js
 ChartJS.register(CategoryScale, LinearScale, LineElement, Title, ChartTooltip, Legend);
@@ -148,18 +148,18 @@ const RealTimeUpdates = () => {
                                 <Divider sx={{ marginY: 2 }} />
                                 <Box>
                                     {data.map((item, index) => (
-                                        <ExpansionPanel key={index} expanded={expanded === `panel${index}`} onChange={handleExpandChange(`panel${index}`)}>
-                                            <ExpansionPanelSummary
+                                        <Accordion key={index} expanded={expanded === `panel${index}`} onChange={handleExpandChange(`panel${index}`)}>
+                                            <AccordionSummary
                                                 expandIcon={<ExpandMoreIcon />}
                                                 aria-controls={`panel${index}bh-content`}
                                                 id={`panel${index}bh-header`}
                                             >
                                                 <Typography>{item.time.toLocaleTimeString()}</Typography>
-                                            </ExpansionPanelSummary>
-                                            <ExpansionPanelDetails>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
                                                 <Typography>Value: {item.value.toFixed(2)}</Typography>
-                                            </ExpansionPanelDetails>
-                                        </ExpansionPanel>
+                                            </AccordionDetails>
+                                        </Accordion>
                                     ))}
                                 </Box>
                             </Paper>

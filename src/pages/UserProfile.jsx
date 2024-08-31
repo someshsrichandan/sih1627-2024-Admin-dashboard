@@ -3,7 +3,7 @@ import {
   Container, Grid, Paper, Typography, Avatar, 
   Tabs, Tab, Box, List, ListItem, ListItemAvatar, 
   ListItemText, Divider, Button, Card, CardContent, 
-  CardHeader, IconButton, DataGrid 
+  CardHeader, IconButton 
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MedicationIcon from '@mui/icons-material/Medication';
@@ -11,6 +11,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import EditIcon from '@mui/icons-material/Edit';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import { DataGrid } from '@mui/x-data-grid'; // Import DataGrid from @mui/x-data-grid
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

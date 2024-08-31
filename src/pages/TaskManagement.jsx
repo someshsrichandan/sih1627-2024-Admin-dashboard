@@ -1,4 +1,3 @@
-// TaskManagement.js
 import React, { useState, useEffect } from 'react';
 import {
   Container,
@@ -35,9 +34,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import KanbanIcon from '@mui/icons-material/ViewKanban';
 import MuiAlert from '@mui/material/Alert';
-import DatePicker from '@mui/x-date-pickers/DatePicker';
+
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers'; // Import DatePicker here
 import { Virtuoso } from 'react-virtuoso';
 import { useTheme } from '@mui/material/styles';
 import { Draggable, DragDropContext, Droppable } from 'react-beautiful-dnd';

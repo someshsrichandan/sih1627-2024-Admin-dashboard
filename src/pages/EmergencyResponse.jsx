@@ -27,7 +27,6 @@ import {
   DialogContent,
   DialogActions,
   Chip,
-  Badge,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -79,6 +78,24 @@ const EmergencyResponse = () => {
 
     fetchIncidents();
   }, []);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    setNotificationMessage('Refreshing data...');
+    setOpenSnackbar(true);
+    try {
+      const response = await fetch('/api/incidents'); // Replace with your actual API endpoint
+      const data = await response.json();
+      setIncidents(data);
+      setNotificationMessage('Data refreshed successfully');
+    } catch (error) {
+      console.error('Failed to refresh data:', error);
+      setNotificationMessage('Failed to refresh data');
+    } finally {
+      setLoading(false);
+      setOpenSnackbar(true);
+    }
+  };
 
   const handleOpenDialog = (incident = { id: null, title: '', description: '', type: '', severity: 'Medium', status: 'Open', reportedDate: new Date(), assignedTo: '' }) => {
     setCurrentIncident(incident);

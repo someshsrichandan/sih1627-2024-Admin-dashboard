@@ -3,7 +3,7 @@ import {
     Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     TablePagination, TextField, Button, FormControl, InputLabel, Select, MenuItem, IconButton,
     Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, Box, CircularProgress, Snackbar,
-    Tooltip, Divider, Typography, Chart, useMediaQuery
+    Tooltip, Divider, Chart, useMediaQuery
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -14,7 +14,6 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 // Initialize Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, Legend);
-
 const ReceiveDrugs = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);

@@ -1,93 +1,89 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-    Container, Typography, Paper, Grid, Box, TextField, Select, MenuItem,
-    InputLabel, FormControl, Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, TableSortLabel, IconButton, CircularProgress,
-    Snackbar, Divider, Chip, Button, Tooltip, Dialog, DialogTitle, DialogContent,
-    DialogActions, DatePicker, AdapterDateFns, LocalizationProvider, Pagination,
-    TablePagination, SnackbarProvider, Alert as MuiAlert, Skeleton, Card,
-    CardContent, CardHeader, useMediaQuery, useTheme
+    Container, Typography, Paper, Box, Grid, TextField, FormControl,
+    InputLabel, Select, MenuItem, Button, Divider, IconButton, Tooltip,
+    Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    TableSortLabel, TablePagination, Dialog, DialogTitle, DialogContent,
+    DialogActions, Card, CardContent, CardHeader, Switch, FormControlLabel
 } from '@mui/material';
-import { Line, Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, BarElement, Title, Tooltip as ChartTooltip, Legend } from 'chart.js';
-import { useSnackbar } from 'notistack';
-import { DateRangePicker } from '@mui/x-date-pickers-pro';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import { Visibility, Edit, Delete, Search } from '@mui/icons-material';
+import { SnackbarProvider, useSnackbar } from 'notistack'; // Correct import from notistack
 
-// Register ChartJS components
-ChartJS.register(CategoryScale, LinearScale, LineElement, BarElement, Title, ChartTooltip, Legend);
+// Custom hook for handling sorting
+const useSortableData = (items, config = null) => {
+    const [sortConfig, setSortConfig] = useState(config);
 
-const LocalDistribution = () => {
-    const [distributionData, setDistributionData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [filterCategory, setFilterCategory] = useState('all');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [dateRange, setDateRange] = useState([null, null]);
-    const [quantityRange, setQuantityRange] = useState([0, 100]);
-    const [sortedData, setSortedData] = useState([]);
-    const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('date');
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const { enqueueSnackbar } = useSnackbar();
-    const theme = useTheme();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const sortedItems = React.useMemo(() => {
+        let sortableItems = [...items];
+        if (sortConfig !== null) {
+            sortableItems.sort((a, b) => {
+                if (a[sortConfig.key] < b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? -1 : 1;
+                }
+                if (a[sortConfig.key] > b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+        return sortableItems;
+    }, [items, sortConfig]);
 
-    useEffect(() => {
-        // Simulate fetching distribution data
-        const fetchData = () => {
-            setTimeout(() => {
-                setDistributionData([
-                    { id: 1, name: 'Aspirin', quantity: 100, date: '2024-08-15', location: 'Delhi', lat: 28.6139, lon: 77.2090 },
-                    { id: 2, name: 'Paracetamol', quantity: 50, date: '2024-08-20', location: 'Mumbai', lat: 19.0760, lon: 72.8777 },
-                    { id: 3, name: 'Amoxicillin', quantity: 30, date: '2024-08-10', location: 'Bangalore', lat: 12.9716, lon: 77.5946 },
-                    // Add more sample data here
-                ]);
-                setLoading(false);
-            }, 1000);
-        };
-
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        // Apply filters and search
-        const filtered = distributionData.filter(item => {
-            const itemDate = new Date(item.date);
-            return (filterCategory === 'all' || item.location === filterCategory) &&
-                   (item.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-                   (dateRange[0] === null || itemDate >= dateRange[0]) &&
-                   (dateRange[1] === null || itemDate <= dateRange[1]) &&
-                   (item.quantity >= quantityRange[0] && item.quantity <= quantityRange[1]);
-        });
-
-        setSortedData(filtered.sort((a, b) => {
-            if (order === 'asc') {
-                return a[orderBy] < b[orderBy] ? -1 : 1;
-            } else {
-                return a[orderBy] > b[orderBy] ? -1 : 1;
-            }
-        }));
-    }, [distributionData, filterCategory, searchTerm, dateRange, quantityRange, order, orderBy]);
-
-    const handleSort = (property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
+    const requestSort = key => {
+        let direction = 'ascending';
+        if (
+            sortConfig &&
+            sortConfig.key === key &&
+            sortConfig.direction === 'ascending'
+        ) {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
     };
 
-    const handleDialogOpen = (item) => {
-        setSelectedItem(item);
+    return { items: sortedItems, requestSort, sortConfig };
+};
+
+const DistributeDrugs = () => {
+    const [selectedDrug, setSelectedDrug] = useState('');
+    const [quantity, setQuantity] = useState(0);
+    const [destination, setDestination] = useState('');
+    const [distributionList, setDistributionList] = useState([]);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [page, setPage] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [enableAdvancedFilters, setEnableAdvancedFilters] = useState(false);
+    const [filterDestination, setFilterDestination] = useState('');
+    const [filterQuantity, setFilterQuantity] = useState('');
+
+    const { enqueueSnackbar } = useSnackbar(); // Correctly using useSnackbar from notistack
+
+    // Mock data for drugs and destinations
+    const drugs = ['Paracetamol', 'Ibuprofen', 'Amoxicillin', 'Ciprofloxacin'];
+    const destinations = ['Hospital A', 'Clinic B', 'Pharmacy C'];
+
+    const handleAddDistribution = () => {
+        if (selectedDrug && quantity > 0 && destination) {
+            setDistributionList([...distributionList, { drug: selectedDrug, quantity, destination }]);
+            setSelectedDrug('');
+            setQuantity(0);
+            setDestination('');
+            enqueueSnackbar('Drug distribution added successfully!', { variant: 'success' });
+        } else {
+            enqueueSnackbar('Please fill in all fields.', { variant: 'error' });
+        }
+    };
+
+    const handleDialogOpen = (row) => {
+        setSelectedRow(row);
         setOpenDialog(true);
     };
 
     const handleDialogClose = () => {
         setOpenDialog(false);
-        setSelectedItem(null);
+        setSelectedRow(null);
     };
 
     const handlePageChange = (event, newPage) => {
@@ -99,257 +95,250 @@ const LocalDistribution = () => {
         setPage(0);
     };
 
-    const handleExport = () => {
-        // Implement export logic (e.g., CSV or Excel export)
-        enqueueSnackbar('Export feature is not implemented yet', { variant: 'info' });
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
     };
 
-    const distributionChartData = {
-        labels: sortedData.map(item => item.date),
-        datasets: [{
-            label: 'Quantity Distributed',
-            data: sortedData.map(item => item.quantity),
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderWidth: 2,
-            tension: 0.1,
-        }],
+    const handleAdvancedFilterToggle = () => {
+        setEnableAdvancedFilters(!enableAdvancedFilters);
     };
 
-    const distributionBarData = {
-        labels: sortedData.map(item => item.name),
-        datasets: [{
-            label: 'Total Quantity',
-            data: sortedData.map(item => item.quantity),
-            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-            borderColor: 'rgba(153, 102, 255, 1)',
-            borderWidth: 1,
-        }],
+    const handleFilterApply = () => {
+        enqueueSnackbar('Filters applied.', { variant: 'info' });
     };
+
+    const filteredDistributions = distributionList.filter(item =>
+        item.drug.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (!filterDestination || item.destination === filterDestination) &&
+        (!filterQuantity || item.quantity === Number(filterQuantity))
+    );
+
+    const { items: sortedDistributions, requestSort, sortConfig } = useSortableData(filteredDistributions);
 
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
-                Local Distribution
+                Distribute Drugs
             </Typography>
 
             <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
-                <Typography variant="h6">Distribution Overview</Typography>
+                <Typography variant="h6">New Distribution</Typography>
                 <Divider sx={{ marginY: 2 }} />
-
-                <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} md={3}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
-                            <InputLabel>Location</InputLabel>
+                            <InputLabel>Drug</InputLabel>
                             <Select
-                                value={filterCategory}
-                                onChange={(e) => setFilterCategory(e.target.value)}
+                                value={selectedDrug}
+                                onChange={(e) => setSelectedDrug(e.target.value)}
+                                label="Drug"
                             >
-                                <MenuItem value="all">All</MenuItem>
-                                <MenuItem value="Delhi">Delhi</MenuItem>
-                                <MenuItem value="Mumbai">Mumbai</MenuItem>
-                                <MenuItem value="Bangalore">Bangalore</MenuItem>
-                                {/* Add more locations here */}
+                                {drugs.map(drug => (
+                                    <MenuItem key={drug} value={drug}>{drug}</MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid item xs={12} md={4}>
                         <TextField
                             fullWidth
-                            label="Search"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            variant="outlined"
+                            label="Quantity"
+                            type="number"
+                            value={quantity}
+                            onChange={(e) => setQuantity(Number(e.target.value))}
                         />
                     </Grid>
-                    <Grid item xs={12} md={3}>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DateRangePicker
-                                startText="Start"
-                                endText="End"
-                                value={dateRange}
-                                onChange={(newValue) => setDateRange(newValue)}
-                                renderInput={(startProps, endProps) => (
-                                    <>
-                                        <TextField {...startProps} fullWidth sx={{ marginRight: 1 }} />
-                                        <TextField {...endProps} fullWidth />
-                                    </>
-                                )}
-                            />
-                        </LocalizationProvider>
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <Typography gutterBottom>Quantity Range</Typography>
-                        <Slider
-                            value={quantityRange}
-                            onChange={(e, newValue) => setQuantityRange(newValue)}
-                            valueLabelDisplay="auto"
-                            min={0}
-                            max={500}
-                        />
+                    <Grid item xs={12} md={4}>
+                        <FormControl fullWidth>
+                            <InputLabel>Destination</InputLabel>
+                            <Select
+                                value={destination}
+                                onChange={(e) => setDestination(e.target.value)}
+                                label="Destination"
+                            >
+                                {destinations.map(dest => (
+                                    <MenuItem key={dest} value={dest}>{dest}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Grid>
                 </Grid>
-
-                <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h6">Distribution Trends</Typography>
-                    <Divider sx={{ marginY: 2 }} />
-                    <Line
-                        data={distributionChartData}
-                        options={{
-                            responsive: true,
-                            plugins: {
-                                legend: { position: 'top' },
-                                tooltip: { callbacks: { label: (context) => `Quantity: ${context.raw}` } },
-                            },
-                            scales: {
-                                x: { title: { display: true, text: 'Date' } },
-                                y: { title: { display: true, text: 'Quantity' }, beginAtZero: true },
-                            },
-                        }}
-                    />
-                </Box>
-
-                <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h6">Distribution Summary</Typography>
-                    <Divider sx={{ marginY: 2 }} />
-                    <Bar
-                        data={distributionBarData}
-                        options={{
-                            responsive: true,
-                            plugins: {
-                                legend: { position: 'top' },
-                                tooltip: { callbacks: { label: (context) => `Quantity: ${context.raw}` } },
-                            },
-                            scales: {
-                                x: { title: { display: true, text: 'Drug Name' } },
-                                y: { title: { display: true, text: 'Total Quantity' }, beginAtZero: true },
-                            },
-                        }}
-                    />
-                </Box>
-
-                <Box sx={{ marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="contained" color="primary" onClick={handleExport}>
-                        Export Data
-                    </Button>
-                    <Button variant="contained" color="secondary" onClick={() => setOpenSnackbar(true)}>
-                        Update Data
+                <Box sx={{ marginTop: 2 }}>
+                    <Button variant="contained" color="primary" onClick={handleAddDistribution}>
+                        Add to Distribution List
                     </Button>
                 </Box>
             </Paper>
 
-            {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
-                    <CircularProgress />
-                </Box>
-            ) : (
-                <Paper elevation={3} sx={{ padding: 2, marginTop: 2 }}>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Date</TableCell>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell>Quantity</TableCell>
-                                    <TableCell>Location</TableCell>
-                                    <TableCell>Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>{item.date}</TableCell>
-                                        <TableCell>{item.name}</TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={item.quantity}
-                                                color={item.quantity < 50 ? 'error' : 'success'}
-                                            />
-                                        </TableCell>
-                                        <TableCell>{item.location}</TableCell>
-                                        <TableCell>
-                                            <Tooltip title="View Details">
-                                                <IconButton
-                                                    color="primary"
-                                                    onClick={() => handleDialogOpen(item)}
-                                                    sx={{ marginRight: 1 }}
-                                                >
-                                                    <i className="material-icons">visibility</i>
-                                                </IconButton>
-                                            </Tooltip>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-
-                        <TablePagination
-                            rowsPerPageOptions={[5, 10, 25]}
-                            component="div"
-                            count={sortedData.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handlePageChange}
-                            onRowsPerPageChange={handleRowsPerPageChange}
+            <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
+                <Typography variant="h6">Distribution List</Typography>
+                <Divider sx={{ marginY: 2 }} />
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} md={4}>
+                        <TextField
+                            fullWidth
+                            label="Search"
+                            variant="outlined"
+                            value={searchTerm}
+                            onChange={handleSearch}
+                            InputProps={{
+                                endAdornment: (
+                                    <IconButton>
+                                        <Search />
+                                    </IconButton>
+                                ),
+                            }}
                         />
-                    </TableContainer>
-                </Paper>
-            )}
-
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={() => setOpenSnackbar(false)}
-            >
-                <MuiAlert onClose={() => setOpenSnackbar(false)} severity="info">
-                    Distribution data updated!
-                </MuiAlert>
-            </Snackbar>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={enableAdvancedFilters}
+                                    onChange={handleAdvancedFilterToggle}
+                                    color="primary"
+                                />
+                            }
+                            label="Enable Advanced Filters"
+                        />
+                    </Grid>
+                </Grid>
+                {enableAdvancedFilters && (
+                    <Box sx={{ marginTop: 2 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Filter by Destination</InputLabel>
+                                    <Select
+                                        value={filterDestination}
+                                        onChange={(e) => setFilterDestination(e.target.value)}
+                                        label="Filter by Destination"
+                                    >
+                                        {destinations.map(dest => (
+                                            <MenuItem key={dest} value={dest}>{dest}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Filter by Quantity"
+                                    type="number"
+                                    value={filterQuantity}
+                                    onChange={(e) => setFilterQuantity(e.target.value)}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Box sx={{ marginTop: 2 }}>
+                            <Button variant="contained" color="secondary" onClick={handleFilterApply}>
+                                Apply Filters
+                            </Button>
+                        </Box>
+                    </Box>
+                )}
+                <TableContainer sx={{ marginTop: 2 }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>
+                                    <TableSortLabel
+                                        active={sortConfig?.key === 'drug'}
+                                        direction={sortConfig?.key === 'drug' ? sortConfig.direction : 'asc'}
+                                        onClick={() => requestSort('drug')}
+                                    >
+                                        Drug
+                                    </TableSortLabel>
+                                </TableCell>
+                                <TableCell>
+                                    <TableSortLabel
+                                        active={sortConfig?.key === 'quantity'}
+                                        direction={sortConfig?.key === 'quantity' ? sortConfig.direction : 'asc'}
+                                        onClick={() => requestSort('quantity')}
+                                    >
+                                        Quantity
+                                    </TableSortLabel>
+                                </TableCell>
+                                <TableCell>
+                                    <TableSortLabel
+                                        active={sortConfig?.key === 'destination'}
+                                        direction={sortConfig?.key === 'destination' ? sortConfig.direction : 'asc'}
+                                        onClick={() => requestSort('destination')}
+                                    >
+                                        Destination
+                                    </TableSortLabel>
+                                </TableCell>
+                                <TableCell>Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {sortedDistributions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{row.drug}</TableCell>
+                                    <TableCell>{row.quantity}</TableCell>
+                                    <TableCell>{row.destination}</TableCell>
+                                    <TableCell>
+                                        <Tooltip title="Edit">
+                                            <IconButton color="primary" onClick={() => {/* handle edit */}}>
+                                                <Edit />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Delete">
+                                            <IconButton color="error" onClick={() => {/* handle delete */}}>
+                                                <Delete />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="View Details">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleDialogOpen(row)}
+                                            >
+                                                <Visibility />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={sortedDistributions.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handlePageChange}
+                        onRowsPerPageChange={handleRowsPerPageChange}
+                    />
+                </TableContainer>
+            </Paper>
 
             <Dialog open={openDialog} onClose={handleDialogClose}>
                 <DialogTitle>Distribution Details</DialogTitle>
                 <DialogContent>
-                    {selectedItem && (
-                        <Box>
-                            <Typography variant="h6">Drug Name: {selectedItem.name}</Typography>
-                            <Typography>Date: {selectedItem.date}</Typography>
-                            <Typography>Quantity: {selectedItem.quantity}</Typography>
-                            <Typography>Location: {selectedItem.location}</Typography>
-                        </Box>
+                    {selectedRow && (
+                        <Card>
+                            <CardHeader title="Details" />
+                            <CardContent>
+                                <Typography variant="h6">Drug: {selectedRow.drug}</Typography>
+                                <Typography>Quantity: {selectedRow.quantity}</Typography>
+                                <Typography>Destination: {selectedRow.destination}</Typography>
+                            </CardContent>
+                        </Card>
                     )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDialogClose}>Close</Button>
                 </DialogActions>
             </Dialog>
-
-            <Box sx={{ marginTop: 4, height: 400 }}>
-                <Typography variant="h6">Distribution Locations</Typography>
-                <Divider sx={{ marginY: 2 }} />
-                <MapContainer center={[20.5937, 78.9629]} zoom={5} style={{ height: '100%', width: '100%' }}>
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    />
-                    {distributionData.map(item => (
-                        <Marker key={item.id} position={[item.lat, item.lon]}>
-                            <Popup>
-                                <Typography variant="subtitle2">{item.name}</Typography>
-                                <Typography>Date: {item.date}</Typography>
-                                <Typography>Quantity: {item.quantity}</Typography>
-                            </Popup>
-                        </Marker>
-                    ))}
-                </MapContainer>
-            </Box>
         </Container>
     );
 };
 
-const LocalDistributionPage = () => (
+const DistributeDrugsPage = () => (
     <SnackbarProvider maxSnack={3}>
-        <LocalDistribution />
+        <DistributeDrugs />
     </SnackbarProvider>
 );
 
-export default LocalDistributionPage;
+export default DistributeDrugsPage;
