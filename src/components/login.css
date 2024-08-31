@@ -14,7 +14,7 @@ img{
   height: 500px;
   width:600px;
 border-radius: 5%;
-
+z-index: -1;
 }
 .form{
   display: flex;
