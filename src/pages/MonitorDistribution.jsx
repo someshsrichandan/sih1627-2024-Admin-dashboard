@@ -1,4 +1,3 @@
-// MonitorDistribution.js
 import React, { useState, useEffect } from 'react';
 import {
   Container,
@@ -46,7 +45,6 @@ const MonitorDistribution = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    // Fetch initial distribution data from the server
     const fetchDistributionData = async () => {
       try {
         const response = await fetch('/api/distribution'); // Replace with your actual API endpoint
@@ -60,22 +58,12 @@ const MonitorDistribution = () => {
     };
 
     fetchDistributionData();
-
-    // WebSocket setup for real-time updates (simulated here)
-    // const ws = new WebSocket('ws://your-websocket-url');
-    // ws.onmessage = (event) => {
-    //   const updatedData = JSON.parse(event.data);
-    //   setDistributionData(updatedData);
-    // };
-
-    // return () => ws.close(); // Cleanup on component unmount
   }, []);
 
   const handleRefresh = () => {
     setLoading(true);
     setNotificationMessage('Refreshing data...');
     setOpenSnackbar(true);
-    // Simulate refresh
     setTimeout(() => {
       setLoading(false);
       setNotificationMessage('Data refreshed successfully');
@@ -98,7 +86,6 @@ const MonitorDistribution = () => {
   const handleExport = () => {
     setNotificationMessage('Exporting data...');
     setOpenSnackbar(true);
-    // Simulate data export
     setTimeout(() => {
       setNotificationMessage('Data exported successfully');
       setOpenSnackbar(true);
@@ -254,7 +241,7 @@ const MonitorDistribution = () => {
         <Typography variant="h6" component="h2">
           Distribution Routes
         </Typography>
-        <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY"> {/* Replace with your Google Maps API key */}
+        <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY" libraries={["visualization"]}> {/* Include libraries prop */}
           <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={5}>
             {routes.map((route, index) => (
               <Polyline key={index} path={route.path} options={route.options} />
