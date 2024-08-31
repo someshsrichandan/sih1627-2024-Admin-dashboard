@@ -13,17 +13,14 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DownloadIcon from '@mui/icons-material/Download';
 import InfoIcon from '@mui/icons-material/Info';
-import PieChart from 'react-minimal-pie-chart'; // Example chart library
-import { Bar } from 'react-chartjs-2'; // Import Bar chart directly
- // Example chart library
+import { PieChart } from 'react-minimal-pie-chart'; // Correct import for PieChart
+import { Bar } from 'react-chartjs-2'; // Correct import for Bar chart
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip as ChartTooltip, Legend } from 'chart.js';
 
 // Register chart components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, Legend);
 
-
 const usageData = [
-    // Example data, replace with your data fetching logic
     { id: 1, drugName: 'Paracetamol', usage: 500, location: 'Delhi', date: '2024-08-01', details: 'Commonly used analgesic and antipyretic' },
     { id: 2, drugName: 'Ibuprofen', usage: 300, location: 'Mumbai', date: '2024-08-02', details: 'Nonsteroidal anti-inflammatory drug' },
     { id: 3, drugName: 'Amoxicillin', usage: 150, location: 'Bangalore', date: '2024-08-03', details: 'Antibiotic used for bacterial infections' },
@@ -50,12 +47,11 @@ const UsageReports = () => {
         setPage(0);
     };
 
-    const filteredData = usageData
-        .filter(row => 
-            (!searchQuery || row.drugName.toLowerCase().includes(searchQuery.toLowerCase())) &&
-            (!filterLocation || row.location === filterLocation) &&
-            (!filterDate || row.date === filterDate)
-        );
+    const filteredData = usageData.filter(row => 
+        (!searchQuery || row.drugName.toLowerCase().includes(searchQuery.toLowerCase())) &&
+        (!filterLocation || row.location === filterLocation) &&
+        (!filterDate || row.date === filterDate)
+    );
 
     const handleClearFilters = () => {
         setSearchQuery('');
@@ -137,7 +133,7 @@ const UsageReports = () => {
                     <Paper elevation={3} sx={{ padding: 2 }}>
                         <Typography variant="h6">Usage Distribution</Typography>
                         <PieChart
-                            data={usageData.map(item => ({ title: item.drugName, value: item.usage, color: '#'+((1<<24)*Math.random()|0).toString(16) }))}
+                            data={usageData.map(item => ({ title: item.drugName, value: item.usage, color: '#' + ((1 << 24) * Math.random() | 0).toString(16) }))}
                             style={{ height: '300px' }}
                         />
                     </Paper>
@@ -146,7 +142,6 @@ const UsageReports = () => {
                     <Paper elevation={3} sx={{ padding: 2 }}>
                         <Typography variant="h6">Usage by Drug</Typography>
                         <Bar
-                            type='bar'
                             data={chartData}
                             options={{
                                 responsive: true,
@@ -204,7 +199,6 @@ const UsageReports = () => {
                                 <MenuItem value="Delhi">Delhi</MenuItem>
                                 <MenuItem value="Mumbai">Mumbai</MenuItem>
                                 <MenuItem value="Bangalore">Bangalore</MenuItem>
-                                {/* Add more locations as needed */}
                             </Select>
                         </FormControl>
                     </Grid>
@@ -258,7 +252,6 @@ const UsageReports = () => {
                     <Typography>Advanced Filters</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    {/* Add additional filter options here */}
                     <Typography variant="body2">No additional filters available at the moment.</Typography>
                 </AccordionDetails>
             </Accordion>
