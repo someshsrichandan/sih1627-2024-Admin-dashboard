@@ -21,6 +21,7 @@ const DistributorSidebar = ({ colors }) => (
       },
     }}
   >
+    {/* added new file */}
     <Item title="Dashboard" path="/" colors={colors} icon={<DashboardOutlined />} />
     <Item title="Distribute Drugs" path="/distribute-drugs" colors={colors} icon={<LocalShippingOutlined />} />
     <Item title="Track Shipments" path="/track-shipments" colors={colors} icon={<SyncOutlined />} />
